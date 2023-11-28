@@ -1,0 +1,146 @@
+mql5
+//+------------------------------------------------------------------+
+//|                                              Good Monday MT5.mq5 |
+//|                                 https://www.forexroboteasy.com   |
+//|                                            Forex Robot Easy Team |
+//+------------------------------------------------------------------+
+
+// Input parameters
+input string CurrencyPairs[] = {'GBPUSD', 'AUDUSD', 'NZDUSD', 'USDCAD', 'EURGBP', 'EURCHF', 'GBPCAD', 'GBPAUD', 'AUDCHF', 'AUDJPY', 'AUDNZD', 'CHFJPY', 'CADJPY', 'NZDJPY', 'NZDCHF', 'EURUSD', 'GBPCHF', 'GBPJPY'};
+input double GapThreshold = 0.1;
+input double StopLoss = 50;
+input double TakeProfit = 100;
+
+// Global variables
+int ticket = 0;
+
+//+------------------------------------------------------------------+
+//| Expert initialization function                                   |
+//+------------------------------------------------------------------+
+int OnInit()
+{
+    // Add initialization code here
+    return(INIT_SUCCEEDED);
+}
+
+//+------------------------------------------------------------------+
+//| Expert deinitialization function                                 |
+//+------------------------------------------------------------------+
+void OnDeinit(const int reason)
+{
+    // Add deinitialization code here
+}
+
+//+------------------------------------------------------------------+
+//| Expert start function                                            |
+//+------------------------------------------------------------------+
+void OnTick()
+{
+    for (int i = 0; i < ArraySize(CurrencyPairs); i++)
+    {
+        double gap = CalculatePriceGap(CurrencyPairs[i]);
+        if (IsGapValid(gap))
+        {
+            if (IsGapUp(gap))
+                Buy(CurrencyPairs[i]);
+            else
+                Sell(CurrencyPairs[i]);
+        }
+    }
+}
+
+//+------------------------------------------------------------------+
+//| Calculate price gap for a given currency pair                     |
+//+------------------------------------------------------------------+
+double CalculatePriceGap(string currencyPair)
+{
+    // Add code to calculate the price gap for the given currency pair
+    double gap = 0.0;
+    // ...
+    return gap;
+}
+
+//+------------------------------------------------------------------+
+//| Check if the price gap is valid                                   |
+//+------------------------------------------------------------------+
+bool IsGapValid(double gap)
+{
+    return MathAbs(gap) > GapThreshold;
+}
+
+//+------------------------------------------------------------------+
+//| Check if the price gap is up                                      |
+//+------------------------------------------------------------------+
+bool IsGapUp(double gap)
+{
+    return gap > 0;
+}
+
+//+------------------------------------------------------------------+
+//| Buy a given currency pair at the opening of the forex market      |
+//+------------------------------------------------------------------+
+void Buy(string currencyPair)
+{
+    // Add code to place a buy order for the given currency pair
+    ticket = OrderSend(currencyPair, OP_BUY, 1.0, Ask, 0, Ask - StopLoss * _Point, Ask + TakeProfit * _Point, 'Buy order', 0, 0, Green);
+}
+
+//+------------------------------------------------------------------+
+//| Sell a given currency pair at the opening of the forex market     |
+//+------------------------------------------------------------------+
+void Sell(string currencyPair)
+{
+    // Add code to place a sell order for the given currency pair
+    ticket = OrderSend(currencyPair, OP_SELL, 1.0, Bid, 0, Bid + StopLoss * _Point, Bid - TakeProfit * _Point, 'Sell order', 0, 0, Red);
+}
+
+//+------------------------------------------------------------------+
+//| Error handling function                                          |
+//+------------------------------------------------------------------+
+void OnTradeError(const int error)
+{
+    // Add code to handle trade errors here
+    Print('Trade error: ', error);
+}
+
+//+------------------------------------------------------------------+
+//| Order close function                                             |
+//+------------------------------------------------------------------+
+void OnTradeTransaction(const MqlTradeTransaction& trans, const MqlTradeRequest& request, const MqlTradeResult& result)
+{
+    // Add code to handle order close here
+    if (result.retcode == 10009)
+    {
+        // Order closed successfully
+        Print('Order closed: ', trans.order);
+    }
+    else if (result.retcode != 10008)
+    {
+        // Handle trade errors
+        OnTradeError(result.retcode);
+    }
+}
+
+//+------------------------------------------------------------------+
+//| Expert tick function                                             |
+//+------------------------------------------------------------------+
+void OnTimer()
+{
+    // Add code to handle timer events here
+}
+
+//+------------------------------------------------------------------+
+//| Expert draw function                                             |
+//+------------------------------------------------------------------+
+void OnChartEvent(const int id, const long& lparam, const double& dparam, const string& sparam)
+{
+    // Add code to handle chart events here
+}
+
+//+------------------------------------------------------------------+
+//| Expert visualization function                                    |
+//+------------------------------------------------------------------+
+void OnChartEvent(const int id, const long& lparam)
+{
+    // Add code to handle chart events here
+}
